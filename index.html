@@ -4,8 +4,7 @@
 		<title>Peer to Peer Video</title>
 
 		<style type="text/css">
-			video 
-			{
+			video {
 				width: 320px;
 			}
 		</style>
@@ -63,23 +62,24 @@
 
 			peerConnection.addEventListener('icecandidate', handleConnection);
 			peerConnection.addEventListener('addstream', gotRemoteMediaStream);
+			
+			const peerMediaStream = new MediaStream();
+			peerConnection.addStream(peerMediaStream);
 
 			// get the video media stream
 			navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
-				.then(gotMediaStream)
+				.then((mediaStream) => {
+				
+					localVideo.srcObject = mediaStream;
+
+					for (const track of mediaStream.getTracks())
+						peerMediaStream.addTrack(track);
+					}
+				)
 				.catch(logError);
+	
+			function handleConnection(event) {
 
-
-			function gotMediaStream(mediaStream)
-			{
-				localVideo.srcObject = mediaStream;
-
-				peerConnection.addStream(mediaStream);
-				console.log('Added local stream to peerConnection.');
-			}
-					
-			function handleConnection(event)			// onicecandidate
-			{
 				const connection = event.target;
 				const iceCandidate = event.candidate;
 				
@@ -89,8 +89,8 @@
 					const descriptionType = description.type;
 					const descriptionString = JSON.stringify(description);
 					
-					if (descriptionType == 'offer')
-					{
+					if (descriptionType == 'offer') {
+
 						localOffer.value = descriptionString;
 						
 					} else {
@@ -100,30 +100,30 @@
 				}
 			}
 					
-			function gotRemoteMediaStream(event)	// onaddstream
-			{
+			function gotRemoteMediaStream(event) {
+
 				const mediaStream = event.stream;
 				remoteVideo.srcObject = mediaStream;
 				console.log('remote peer connection received remote stream')
 			}
 
-			function offerCreate()
-			{
+			function offerCreate() {
+
 				peerConnection.createOffer(offerOptions)
 					.then(createdOffer)
 					.catch(logError);
 			}
 
-			function createdOffer(description)
-			{
+			function createdOffer(description) {
+
 				peerConnection.setLocalDescription(description)
 					.then(() => {console.log('local peer description set');})
 					.catch(logError);
 			}
 
 
-			function offerAccept()
-			{
+			function offerAccept() {
+
 				const description = JSON.parse(remoteOffer.value);
 				
 				peerConnection.setRemoteDescription(description)
@@ -136,15 +136,15 @@
 				
 			}
 
-			function createdAnswer(description)
-			{
+			function createdAnswer(description) {
+
 				peerConnection.setLocalDescription(description)
 					.then(() => {console.log('remote peer answered');})
 					.catch(logError);
 			}
 
-			function answerAccept()
-			{
+			function answerAccept() {
+
 				const description = JSON.parse(remoteAnswer.value);
 
 				peerConnection.setRemoteDescription(description)
@@ -154,8 +154,8 @@
 			}
 					
 					
-			function logError(error)
-			{
+			function logError(error) {
+
 				console.log(error.toString());
 			}
 		
