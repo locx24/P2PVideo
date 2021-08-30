@@ -8,5 +8,5 @@ Please modify index.html to accomplish the following:
 4. Add the shared screen video track to the peer media stream
 5. When a remote connection is made, display the remote shared screen alongside the remote video
 
-The final index.html should have 2 video elements diaplying the local camera and local screen, and two video elements displaying the remote video and remote screen.
+The final index.html should have 2 video elements displaying the local camera and local screen, and two video elements displaying the remote video and remote screen.
 The peers should be able to see each other's cameras, screens and to speak with each other.
