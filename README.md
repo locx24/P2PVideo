@@ -1,10 +1,9 @@
 # PeerToPeerVideo
-Creates a WebRTC PeerConnection and uses it to share video between two peers without a server 
-
+Creates a WebRTC PeerConnection and shares video between two peers without a signalling server 
 
 Please accomplish the following:
-1. Add an audio track to the shared media stream
-2. Add a second video element that displays the local screen
-3. Add the screen video track to the shared media stream
-4. When a remote connection is made, display the remote video and shared screen
-5. Create a merge request with your changes
+1. Add an audio track to the video stream
+2. Create a video stream of the local screen using getDisplayMedia
+3. Add a video element, alongside the local video, that displays the screen
+4. Add the shared screen video track to the peer media stream
+5. When a remote connection is made, display the remote shared screen alongside the remote video
