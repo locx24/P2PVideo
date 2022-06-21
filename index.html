@@ -5,7 +5,15 @@
 
 		<style type="text/css">
 			video {
+				display: block;
+				margin: auto;
 				width: 320px;
+			}
+			/* Style the audio element to the left of the local video */
+			song {
+				display: flex;
+				max-width:100%;
+        		height:auto;
 			}
 		</style>
 
@@ -13,8 +21,25 @@
 
 	<body>
 
+	<!-- 1 - Add audio element. (Downloaded mp3 song non-functional - review) -->	
+	<audio controls autoplay muted>
+			
+		 <!--<source src="https://www.bensound.com/royalty-free-music/jazz
+		 https://www.bensound.com/bensound-music/bensound-thejazzpiano.mp3" type="audio/mp3">-->
+
+			<source id = "song" src="https://www.computerhope.com/jargon/m/example.mp3" type = "audio/mp3">
+			Unfortunately, your browser does not support the audio element.
+		  </audio>
+
 		<video id="localVideo" autoplay playsinline></video>
 		<video id="remoteVideo" autoplay playsinline></video>
+		
+
+		<!-- 2 - New Video Stream to display the Local Screen -->
+		<video id="videoStream" autoplay playsinline></video>
+		
+		<!-- 3 - Add a video element that displays the screen  -->
+			<video id = "videoToDisplayLocalScreen" src = 'localVideo'></video>
 
 		<div>
 			<p>
@@ -41,6 +66,9 @@
 			const localVideo = document.getElementById('localVideo');
 			const remoteVideo = document.getElementById('remoteVideo');
 
+			// 2.1 - Return videoStream element
+			const videoStream = document.getElementById('videoStream');
+
 			const localOffer = document.getElementById('localOffer');
 			const remoteOffer = document.getElementById('remoteOffer');
 			const createOffer = document.getElementById('createOffer');
@@ -64,19 +92,36 @@
 			peerConnection.addEventListener('addstream', gotRemoteMediaStream);
 			
 			const peerMediaStream = new MediaStream();
+
 			peerConnection.addStream(peerMediaStream);
+
+
+			 /* 4. - Add the shared screen video track to the peer media stream
+			 peerConnection.addStream(videoStream); Review */
 
 			// get the video media stream
 			navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
-				.then((mediaStream) => {
-				
-					localVideo.srcObject = mediaStream;
+                .then((mediaStream) => {
+                
+                    localVideo.srcObject = mediaStream;
 
-					for (const track of mediaStream.getTracks())
-						peerMediaStream.addTrack(track);
-					}
-				)
-				.catch(logError);
+                    for (const track of mediaStream.getTracks())
+                        peerMediaStream.addTrack(track);
+                    }
+                )
+                .catch(logError);
+
+			// 2.2 - Prompt User to select and grant permission to share their Entire Screen, Window, or Chrome Tab
+            navigator.mediaDevices.getDisplayMedia({videoStream})
+                .then((mediaStream) => {
+                
+                    videoStream.srcObject = mediaStream;
+
+                    for (const track of mediaStream.getTracks())
+                        peerMediaStream.addTrack(track);
+                    }
+                )
+                .catch(logError);
 	
 			function handleConnection(event) {
 
@@ -161,6 +206,5 @@
 		
 		
 		</script>
-
 	</body>
 </html>
